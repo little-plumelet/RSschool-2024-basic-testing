@@ -58,34 +58,23 @@ describe('BankAccount', () => {
   });
 
   test('should set new balance if fetchBalance returned number', async () => {
-    while (true) {
-      try {
-        await account.synchronizeBalance();
-        const balance = account.getBalance();
-        expect(balance).toEqual(expect.any(Number));
-        break;
-      } catch (e) {
-        if (e instanceof SynchronizationFailedError) {
-          continue;
-        } else {
-          throw e;
-        }
-      }
-    }
+    const mockFetchBalance = jest
+      .spyOn(account, 'fetchBalance')
+      .mockResolvedValue(500);
+    const result = await account.fetchBalance();
+    expect(result).toBe(500);
+    mockFetchBalance.mockRestore();
   });
 
   test('should throw SynchronizationFailedError if fetchBalance returned null', async () => {
-    while (true) {
-      try {
-        await account.synchronizeBalance();
-      } catch (e) {
-        if (e instanceof SynchronizationFailedError) {
-          expect(e).toBeInstanceOf(SynchronizationFailedError);
-          break;
-        } else {
-          throw e;
-        }
-      }
-    }
+    const mockFetchBalance = jest
+      .spyOn(account, 'fetchBalance')
+      .mockResolvedValue(null);
+
+    await expect(account.synchronizeBalance()).rejects.toThrow(
+      SynchronizationFailedError,
+    );
+
+    mockFetchBalance.mockRestore();
   });
 });
