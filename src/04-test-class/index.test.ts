@@ -49,7 +49,6 @@ describe('BankAccount', () => {
 
   test('fetchBalance should return number in case if request did not failed', async () => {
     const result = await account.fetchBalance();
-    console.log(result);
     if (result !== null) {
       expect(result).toEqual(expect.any(Number));
     } else {
